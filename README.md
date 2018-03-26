@@ -1,218 +1,82 @@
-<img src="https://raw.githubusercontent.com/rematch/rematch/master/logo.png" alt="Rematch Logo">
+# repaar
 
-<p>
-<a href='https://travis-ci.org/rematch/rematch' style='margin: 0 0.5rem;'>
-<img src='https://travis-ci.org/rematch/rematch.svg?branch=master' alt='Build Status' height='18'/>
-</a>
+> Pronounced "repair"
 
-<a href='https://coveralls.io/github/rematch/rematch?branch=master' style='margin: 0 0.5rem;'>
-<img src='https://coveralls.io/repos/github/rematch/rematch/badge.svg?branch=master' alt='Coverage Status' height='18'/>
-</a>
+JavaScript state-management with unprecedented ease-of-use and performance by
+combining the best of `redux` and `mobx`.
 
-<a href='https://www.codacy.com/app/ShMcK/rematch?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rematch/rematch&amp;utm_campaign=Badge_Grade' style='margin: 0 0.5rem;'>
-  <img src='https://api.codacy.com/project/badge/Grade/04039822aa23402bb985d9b374ac4a39' alt='Codacy Badge' height='18'>
-</a>
+## Overview
 
-<a href='https://badge.fury.io/js/%40rematch%2Fcore' style='margin: 0 0.5rem;'>
-<img src='https://badge.fury.io/js/%40rematch%2Fcore.svg' alt='npm version' height='18'>
-</a>
+`rematch` is a library with the intent to simplify `redux` even more and is used as the basis for `repaar`. Unfortunately `rematch` doesn't solve some of
+the core issues with redux, which have been solved by `mobx` though. So for `repaar` a small library from the
+`mobx` creator called `immer` was included. By including this library the state inside the
+reducers can be mutated instead of always recreating the state again by hand.
+With this approach immutability without any additional effort and minimal
+effects on performance is achieved.
 
-<a href='https://img.shields.io/badge/size-<18kb-brightgreen.svg?style=flat' style='margin: 0 0.5rem;'>
-<img src='https://img.shields.io/badge/size-<18kb-brightgreen.svg?style=flat' alt='file size' height='18'>
-</a>
+### Includes
 
-<a href='https://img.shields.io/badge/dependencies-redux-brightgreen.svg?style=flat' style='margin: 0 0.5rem;'>
-<img src='https://img.shields.io/badge/dependencies-redux-brightgreen.svg?style=flat' alt='file size' height='18'>
-</a>
-</p>
+* Immutability from `immer`
+  * Writing regular JS inside reducers
+  * Performance comparable to using `ImmutableJS`
+* Middleware from `redux`
+* Async effects from `rematch`
+  * No `redux-thunk` necessary
 
-# Rematch
+### Avoids
 
-## Rethink Redux.
+* Recreating state by hand with `Object.assign()`
+* No classes, state stored as POJO
+* No decorators which are still experimental syntax
 
-Rematch is Redux best practices without the boilerplate. No more action types, action creators, switch statements or thunks. 
+## Installation
 
-- [Why we created Rematch](https://hackernoon.com/redesigning-redux-b2baee8b8a38)
-- [A comparison of Redux & Rematch](./docs/purpose.md)
-
-
-
-## Index
-
-* [Getting Started](#getting-started)
-* [Purpose](./docs/purpose.md)
-* [Examples](#examples)
-* [Migration Guide](#migrating-from-redux)
-* API Reference
-  * [@rematch/core API](./docs/api.md)
-  * [Init Redux API](./docs/reduxApi.md)
-  * [Plugins API](./docs/pluginsApi.md)
-* Recipes
-  * [Devtools](./docs/recipes/devtools.md)
-  * [React](./docs/recipes/react.md)
-  * [Vue](./docs/recipes/vue.md)
-* Plugins
-  * [Subscriptions](./plugins/subscriptions/README.md)
-  * [Selectors](./plugins/select/README.md)
-  * [Loading](./plugins/loading/README.md)
-  * [Persist](./plugins/persist/README.md)
-  * [Updated](./plugins/updated/README.md)
-  * [React Navigation](./plugins/react-navigation/README.md)
-* [Inspiration](./docs/inspiration.md)
+```
+npm i repaar
+```
 
 ## Getting Started
 
-```sh
-npm install @rematch/core
 ```
+import { init } from 'repaar'
 
-### Step 1: Init
-
-**init** configures your reducers, devtools & store. 
-
-#### index.js
-
-```js
-import { init } from '@rematch/core'
-import * as models from './models'
-
-const store = init({
-  models,
-})
-```
-
-*For a more advanced setup, see [plugins](./docs/plugins.md) and [Redux config options](./docs/reduxApi.md).*
-
-### Step 2: Models
-
-The **model** brings together state, reducers, async actions & action creators in one place.
-
-#### models.js
-```js
-export const count = {
-  state: 0, // initial state
-  reducers: {
-    // handle state changes with pure functions
-    increment(state, payload) {
-      return state + payload
-    }
+const overlay = {
+  state: {
+    open: false,
+    items: []
   },
-  effects: {
-    // handle state changes with impure functions.
-    // use async/await for async actions
-    async incrementAsync(payload, rootState) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      this.increment(payload)
-    }
-  }
-}
-```
-
-*See the [reducers docs](https://github.com/rematch/rematch/blob/master/docs/api.md#reducers) to learn more, including how to trigger actions from other models.*
-
-Understanding models is as simple as answering a few questions:
-
-1. What is my initial state? **state**
-2. How do I change the state? **reducers**
-3. How do I handle async actions? **effects** with async/await
-
-### Step 3: Dispatch
-
-**dispatch** is how we trigger reducers & effects in your models. Dispatch standardizes your actions without the need for writing action types or action creators.
-
-```js
-import { dispatch } from '@rematch/core'
-                                                  // state = { count: 0 }
-// reducers
-dispatch({ type: 'count/increment', payload: 1 }) // state = { count: 1 }
-dispatch.count.increment(1)                       // state = { count: 2 }
-
-// effects
-dispatch({ type: 'count/incrementAsync', payload: 1 }) // state = { count: 3 } after delay
-dispatch.count.incrementAsync(1)                       // state = { count: 4 } after delay
-```
-
-Dispatch can be called directly, or with the `dispatch[model][action](payload)` shorthand.
-
-
-## Examples
-
-- Count: [JS](https://codepen.io/Sh_McK/pen/BJMmXx?editors=1010) | [React](https://codesandbox.io/s/3kpyz2nnz6) | [Vue](https://codesandbox.io/s/n3373olqo0) | [Angular](https://stackblitz.com/edit/rematch-angular-5-count)
-- Todos: [React](https://codesandbox.io/s/92mk9n6vww)
-
-```jsx
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Provider, connect } from 'react-redux'
-import { init } from '@rematch/core'
-
-// State
-
-const count = {
-  state: 0, // initial state
   reducers: {
-    // handle state changes with pure functions
-    increment(state, payload) {
-      return state + payload
-    }
-  },
-  effects: {
-    // handle state changes with impure functions.
-    // use async/await for async actions
-    async incrementAsync(payload, rootState) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      this.increment(payload)
+    open(state) {
+      state.open = !state.open
+    },
+    add(state, item) {
+      state.items.push(item)
     }
   }
 }
 
 const store = init({
   models: {
-    count
+    overlay,
   }
 })
 
-// View
+store.dispatch({type: 'overlay/add', payload: 'Hello World'})
 
-const Count = props => (
-  <div>
-    The count is {props.count}
-    <button onClick={props.increment}>increment</button>
-    <button onClick={props.incrementAsync}>incrementAsync</button>
-  </div>
-)
-
-const mapState = state => ({
-  count: state.count
-})
-
-const mapDispatch = ({ count: { increment, incrementAsync }}) => ({
-  increment: () => increment(1),
-  incrementAsync: () => incrementAsync(1)
-})
-
-const CountContainer = connect(mapState, mapDispatch)(Count)
-
-ReactDOM.render(
-  <Provider store={store}>
-    <CountContainer />
-  </Provider>,
-  document.getElementById('root')
-)
+const state = store.getState()
 ```
 
-## Migrating From Redux
+## React / Vue and Angular
 
-Moving from Redux to Rematch involves very few steps.
+See TODO.
 
-1. Setup Rematch `init` with Redux [step 1](https://codesandbox.io/s/yw2wy1q929)
-2. Mix reducers & models [step 2](https://codesandbox.io/s/9yk6rjok1r)
-3. Shift to models [step 3](https://codesandbox.io/s/mym2x8m7v9)
+## Roadmap
 
-## API
+* General renaming (a `reducer` doesn't reduce anything)
+* Computed values built in
+* Single object, no namespaces
+* Anonymous actions
 
-See the [@rematch/core API](./docs/api.md)
+## License
 
----
-
-Like this project? ★ us on Github :)
+MIT

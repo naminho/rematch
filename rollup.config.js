@@ -31,7 +31,7 @@ const production = {
     uglify({
       compress: {
         pure_getters: true,
-        unsafe: true,
+        unsafe: false,
       },
       output: {
         comments: false,
@@ -79,6 +79,6 @@ export default (() => {
   // generate root mapping files
   mkdirSync('dist')
   rootFile('cjs')
-  
+
   return [development, production]
 })()
