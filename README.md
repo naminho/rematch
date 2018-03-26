@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/naminho/repaar/master/logo.svg" alt="repaar library logo">
+</p>
+
 # repaar
 
 > Pronounced "repair"
@@ -40,17 +44,24 @@ npm i repaar
 ```
 import { init } from 'repaar'
 
-const overlay = {
+const todo = {
   state: {
-    open: false,
-    items: []
+    username: '',
+    items: [{
+      title: 'Enter a username to get started.',
+      done: false
+    }]
   },
   reducers: {
-    open(state) {
-      state.open = !state.open
+    auth(state, username) {
+      state.username = username
     },
-    add(state, item) {
+    add(state, title) {
+      const item = {title, done: false}
       state.items.push(item)
+    },
+    complete(state, index) {
+      state.items[index].done = true
     }
   }
 }
@@ -61,12 +72,22 @@ const store = init({
   }
 })
 
-store.dispatch({type: 'overlay/add', payload: 'Hello World'})
+store.dispatch({type: 'todo/auth', payload: 'repaar'})
+store.dispatch({type: 'todo/complete', payload: 0})
+store.dispatch({type: 'todo/add', payload: 'Say Hello World'})
 
 const state = store.getState()
+
+=>
+{
+  username: 'repaar',
+  items: [
+    {title: 'Enter ...', done: true}, {title: 'Say ...', done: false}
+  ]
+}
 ```
 
-## React / Vue and Angular
+## React, Vue and Angular
 
 See TODO.
 
