@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/naminho/repaar/master/logo.svg" alt="repaar library logo">
+  <img src="https://raw.githubusercontent.com/naminho/repaar/master/logo.svg?sanitize=true" alt="repaar library logo">
 </p>
 
 # repaar
