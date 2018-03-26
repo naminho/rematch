@@ -1,5 +1,6 @@
 /* eslint no-underscore-dangle: 0 */
 import { combineReducers, Reducer, ReducersMapObject} from 'redux'
+import produce from 'immer'
 import { Action, ConfigRedux, EnhancedReducers, Model, Reducers, RootReducers } from '../../typings/rematch'
 import isListener from '../utils/isListener'
 
@@ -13,7 +14,7 @@ export const createReducer = (reducer: EnhancedReducers, initialState: any) =>
   (state: any = initialState, action: Action) => {
   // handle effects
   if (typeof reducer[action.type] === 'function') {
-    return reducer[action.type](state, action.payload, action.meta)
+    return produce(state, draft => reducer[action.type](draft, action.payload, action.meta))
   }
   return state
 }

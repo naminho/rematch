@@ -39,6 +39,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "immer": "^1.2.0",
     "redux": "^3.7.2"
   },
   "devDependencies": {
