@@ -11,6 +11,6 @@ export default (store) => {
   // setup store store subscription
   store.subscribe(() => {
     const state = store.getState()
-    countEl.value = state.count
+    countEl.value = state.count.items.length
   })
 }
