@@ -27,7 +27,7 @@
   "types": "typings/rematch",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rematch/rematch.git"
+    "url": "git+https://github.com/naminho/repaar.git"
   },
   "scripts": {
     "build": "cross-env rimraf build dist && tsc && rollup -c && node ./scripts/bundles",
