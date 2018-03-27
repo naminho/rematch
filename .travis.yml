@@ -7,3 +7,9 @@ before_install:
 after_script:
   - npm install coveralls
   - coveralls < coverage/lcov.info
+deploy:
+  provider: npm
+  email: matthias.giger@namics.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
